@@ -6,7 +6,7 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=Etc/UTC
+      - TZ=America/Lima
       - PASSWORD=${MY_PASSWRD} #optional
 #      - HASHED_PASSWORD= #optional
 #      - SUDO_PASSWORD=password #optional
@@ -18,3 +18,5 @@ services:
     ports:
       - 8443:8443
     restart: unless-stopped
+
+# NO OLVIDAR CREAR EL ARCHIVO .ENV
