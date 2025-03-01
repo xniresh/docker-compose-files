@@ -1,129 +1,165 @@
 #!/bin/bash
 
-# ZSH, Oh My Zsh, and plugins installation script for Ubuntu
-# Based on official documentation:
+# Script de instalación de ZSH, Oh My Zsh y plugins para Ubuntu
+# Basado en la documentación oficial:
 # - https://ohmyz.sh/
 # - https://github.com/zsh-users/zsh-autosuggestions
 # - https://github.com/zsh-users/zsh-syntax-highlighting
 # - https://github.com/carloscuesta/materialshell
 
-# Exit immediately if a command exits with a non-zero status
+# Salir inmediatamente si un comando falla
 set -e
 
-# Print commands before executing them
-set -x
+# Función para mostrar separadores y mensajes de sección
+show_section() {
+    echo "\n==================================================================="
+    echo "🔷 $1"
+    echo "==================================================================="
+}
 
-# Function to check if a command exists
+# Función para mostrar mensajes de proceso
+show_process() {
+    echo "\n▶️ $1"
+}
+
+# Función para verificar si un comando existe
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-echo "Starting ZSH installation process..."
+# Inicio del script
+show_section "INICIANDO INSTALACIÓN DE ZSH Y OH MY ZSH"
+echo "Este script instalará ZSH, Oh My Zsh y plugins en su sistema."
+echo "Se realizarán los siguientes pasos:"
+echo "  1. Verificación e instalación de ZSH"
+echo "  2. Configuración de ZSH como shell predeterminado"
+echo "  3. Instalación de Oh My Zsh"
+echo "  4. Instalación de plugins (autosuggestions y syntax-highlighting)"
+echo "  5. Instalación del tema materialshell"
+echo "  6. Configuración del archivo .zshrc"
 
-# Check if ZSH is already installed
+# Verificar si ZSH ya está instalado
+show_section "VERIFICANDO INSTALACIÓN DE ZSH"
 if command_exists zsh; then
-    echo "ZSH is already installed. Checking version..."
+    show_process "ZSH ya está instalado en el sistema. Verificando versión..."
     zsh --version
-    read -p "Do you want to proceed with reinstallation? (y/N) " -n 1 -r
+    read -p "¿Desea continuar con la reinstalación? (s/N) " -n 1 -r
     echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Skipping ZSH installation."
+    if [[ ! $REPLY =~ ^[Ss]$ ]]; then
+        echo "Omitiendo la instalación de ZSH."
     else
-        echo "Reinstalling ZSH..."
+        show_process "Reinstalando ZSH..."
+        echo "Actualizando índice de paquetes..."
         sudo apt update
+        echo "Instalando ZSH..."
         sudo apt install -y zsh
     fi
 else
-    echo "Installing ZSH..."
+    show_process "ZSH no está instalado. Procediendo con la instalación..."
+    echo "Actualizando índice de paquetes..."
     sudo apt update
+    echo "Instalando ZSH..."
     sudo apt install -y zsh
 fi
 
-# Set ZSH as default shell
+# Configurar ZSH como shell predeterminado
+show_section "CONFIGURANDO ZSH COMO SHELL PREDETERMINADO"
 if [[ $SHELL != *"zsh"* ]]; then
-    echo "Setting ZSH as default shell..."
+    show_process "Estableciendo ZSH como shell predeterminado..."
     chsh -s $(which zsh)
-    echo "ZSH has been set as your default shell. Changes will take effect after you log out and back in."
+    echo "ZSH ha sido configurado como su shell predeterminado."
+    echo "Los cambios tendrán efecto después de cerrar sesión y volver a iniciarla."
 else
-    echo "ZSH is already your default shell."
+    show_process "ZSH ya es su shell predeterminado."
 fi
 
-# Check if Oh My Zsh is already installed
+# Verificar si Oh My Zsh ya está instalado
+show_section "INSTALANDO OH MY ZSH"
 if [ -d "$HOME/.oh-my-zsh" ]; then
-    echo "Oh My Zsh is already installed."
-    read -p "Do you want to reinstall Oh My Zsh? (y/N) " -n 1 -r
+    show_process "Oh My Zsh ya está instalado en el sistema."
+    read -p "¿Desea reinstalar Oh My Zsh? (s/N) " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "Removing existing Oh My Zsh installation..."
+    if [[ $REPLY =~ ^[Ss]$ ]]; then
+        echo "Eliminando la instalación existente de Oh My Zsh..."
         rm -rf "$HOME/.oh-my-zsh"
-        echo "Installing Oh My Zsh..."
+        echo "Instalando Oh My Zsh..."
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     fi
 else
-    echo "Installing Oh My Zsh..."
+    show_process "Instalando Oh My Zsh..."
+    echo "Descargando e instalando Oh My Zsh desde el repositorio oficial..."
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 fi
 
-# Install zsh-autosuggestions plugin
+# Instalación de plugins
+show_section "INSTALANDO PLUGINS DE ZSH"
+
+# Plugin zsh-autosuggestions
+show_process "Verificando plugin zsh-autosuggestions..."
 ZSH_AUTOSUGGESTIONS_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
 if [ -d "$ZSH_AUTOSUGGESTIONS_DIR" ]; then
-    echo "zsh-autosuggestions plugin is already installed."
-    read -p "Do you want to update it? (y/N) " -n 1 -r
+    echo "El plugin zsh-autosuggestions ya está instalado."
+    read -p "¿Desea actualizarlo? (s/N) " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "Updating zsh-autosuggestions..."
+    if [[ $REPLY =~ ^[Ss]$ ]]; then
+        echo "Actualizando zsh-autosuggestions..."
         cd "$ZSH_AUTOSUGGESTIONS_DIR" && git pull
     fi
 else
-    echo "Installing zsh-autosuggestions plugin..."
+    echo "Instalando plugin zsh-autosuggestions..."
     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 fi
 
-# Install zsh-syntax-highlighting plugin
+# Plugin zsh-syntax-highlighting
+show_process "Verificando plugin zsh-syntax-highlighting..."
 ZSH_SYNTAX_HIGHLIGHTING_DIR="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
 if [ -d "$ZSH_SYNTAX_HIGHLIGHTING_DIR" ]; then
-    echo "zsh-syntax-highlighting plugin is already installed."
-    read -p "Do you want to update it? (y/N) " -n 1 -r
+    echo "El plugin zsh-syntax-highlighting ya está instalado."
+    read -p "¿Desea actualizarlo? (s/N) " -n 1 -r
     echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "Updating zsh-syntax-highlighting..."
+    if [[ $REPLY =~ ^[Ss]$ ]]; then
+        echo "Actualizando zsh-syntax-highlighting..."
         cd "$ZSH_SYNTAX_HIGHLIGHTING_DIR" && git pull
     fi
 else
-    echo "Installing zsh-syntax-highlighting plugin..."
+    echo "Instalando plugin zsh-syntax-highlighting..."
     git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 fi
 
-# Install materialshell theme
+# Instalación del tema materialshell
+show_section "INSTALANDO TEMA MATERIALSHELL"
+show_process "Descargando e instalando tema materialshell..."
 MATERIALSHELL_THEME_PATH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/materialshell.zsh-theme"
 
-# Download the theme file from GitHub repository
-echo "Installing materialshell theme..."
-echo "Downloading materialshell theme from GitHub..."
 wget -q https://raw.githubusercontent.com/carloscuesta/materialshell/refs/heads/master/materialshell.zsh -O "$MATERIALSHELL_THEME_PATH"
 
 if [ $? -eq 0 ]; then
-    echo "materialshell theme has been installed successfully."
-    # Ensure proper permissions
+    echo "✅ El tema materialshell se ha instalado correctamente."
+    # Asegurar permisos correctos
     chmod 644 "$MATERIALSHELL_THEME_PATH"
 else
-    echo "Failed to install materialshell theme."
+    echo "❌ Error al instalar el tema materialshell."
     exit 1
 fi
 
-# Update .zshrc file to enable plugins and theme
-echo "Updating .zshrc file to enable plugins and theme..."
+# Configuración del archivo .zshrc
+show_section "CONFIGURANDO ARCHIVO .ZSHRC"
+show_process "Actualizando configuración de plugins y tema..."
 ZSHRC="$HOME/.zshrc"
 
-# Backup the original .zshrc file
+# Crear backup del archivo .zshrc original
+echo "Creando copia de seguridad del archivo .zshrc..."
 cp "$ZSHRC" "${ZSHRC}.backup.$(date +%Y%m%d%H%M%S)"
 
-# Update the plugins line in .zshrc
+# Actualizar la línea de plugins en .zshrc
+echo "Habilitando plugins zsh-autosuggestions y zsh-syntax-highlighting..."
 sed -i 's/plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' "$ZSHRC"
 
-# Update the theme in .zshrc
+# Actualizar el tema en .zshrc
+echo "Estableciendo materialshell como tema predeterminado..."
 sed -i 's/ZSH_THEME="robbyrussell"/ZSH_THEME="materialshell"/' "$ZSHRC"
 
-echo "Installation and configuration complete!"
-echo "Please log out and log back in to start using ZSH with Oh My Zsh."
-echo "If you want to start using ZSH right now without logging out, run: exec zsh"
+show_section "¡INSTALACIÓN COMPLETADA!"
+echo "✅ ZSH, Oh My Zsh, plugins y tema han sido instalados y configurados correctamente."
+echo "⚠️ NOTA: Para que los cambios surtan efecto, necesita cerrar sesión y volver a iniciarla."
+echo "💡 Si desea comenzar a usar ZSH inmediatamente sin cerrar sesión, ejecute: exec zsh"
