@@ -96,25 +96,19 @@ fi
 
 # Install materialshell theme
 MATERIALSHELL_THEME_PATH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/materialshell.zsh-theme"
-if [ -f "$MATERIALSHELL_THEME_PATH" ]; then
-    echo "materialshell theme is already installed."
-    read -p "Do you want to update it? (y/N) " -n 1 -r
-    echo
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        echo "Updating materialshell theme..."
-        curl -fsSL https://raw.githubusercontent.com/carloscuesta/materialshell/master/materialshell.zsh-theme -o "$MATERIALSHELL_THEME_PATH"
-        echo "materialshell theme has been updated."
-    fi
+
+# Download the theme file from GitHub repository
+echo "Installing materialshell theme..."
+echo "Downloading materialshell theme from GitHub..."
+curl -fsSL https://raw.githubusercontent.com/carloscuesta/materialshell/master/materialshell.zsh-theme -o "$MATERIALSHELL_THEME_PATH"
+
+if [ $? -eq 0 ]; then
+    echo "materialshell theme has been installed successfully."
+    # Ensure proper permissions
+    chmod 644 "$MATERIALSHELL_THEME_PATH"
 else
-    echo "Installing materialshell theme..."
-    # Download the theme file from GitHub repository to Oh My Zsh themes directory
-    curl -fsSL https://raw.githubusercontent.com/carloscuesta/materialshell/master/materialshell.zsh-theme -o "$MATERIALSHELL_THEME_PATH"
-    if [ $? -eq 0 ]; then
-        echo "materialshell theme has been downloaded successfully."
-    else
-        echo "Failed to download materialshell theme. Please check your internet connection."
-        exit 1
-    fi
+    echo "Failed to install materialshell theme."
+    exit 1
 fi
 
 # Update .zshrc file to enable plugins and theme
