@@ -100,7 +100,7 @@ MATERIALSHELL_THEME_PATH="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/material
 # Download the theme file from GitHub repository
 echo "Installing materialshell theme..."
 echo "Downloading materialshell theme from GitHub..."
-curl -fsSL https://raw.githubusercontent.com/carloscuesta/materialshell/master/materialshell.zsh-theme -o "$MATERIALSHELL_THEME_PATH"
+wget -q https://raw.githubusercontent.com/carloscuesta/materialshell/refs/heads/master/materialshell.zsh -O "$MATERIALSHELL_THEME_PATH"
 
 if [ $? -eq 0 ]; then
     echo "materialshell theme has been installed successfully."
